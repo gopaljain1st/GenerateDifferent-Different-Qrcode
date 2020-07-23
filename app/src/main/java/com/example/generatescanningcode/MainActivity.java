@@ -1,10 +1,15 @@
 package com.example.generatescanningcode;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,13 +17,24 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity {
 
     EditText id,nName,generatedId,product;
     Button generate;
     Spinner type;
+    TextView latitude,longitude;
     String message="",typeString="";
+    Location currentLocation;
+    private static  final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+    FusedLocationProviderClient fusedLocationProviderClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +97,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void fetchLastLocatin() {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE_LOCATION_PERMISSION);
+            return;
+        }
+
+        Task<Location> task=fusedLocationProviderClient.getLastLocation();
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location!=null){
+                    currentLocation=location;
+                   // Log.d("curent","current"+currentLocation);
+                    Toast.makeText(MainActivity.this, ""+currentLocation.getLatitude()+" "+currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+                    latitude.setText("Latitude : "+currentLocation.getLatitude());
+                    longitude.setText("Longitude : "+currentLocation.getLongitude());
+                    //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    //mapFragment.getMapAsync(MapActivity.this);
+                }
+            }
+        });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case REQUEST_CODE_LOCATION_PERMISSION:
+                if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    fetchLastLocatin();
+                }
+                break;
+        }
+    }
 
     private void initComponent() {
        id=findViewById(R.id.id);
@@ -89,5 +137,7 @@ public class MainActivity extends AppCompatActivity {
        product=findViewById(R.id.product);
        generate=findViewById(R.id.generate);
        type=findViewById(R.id.type_spinner);
+       latitude=findViewById(R.id.latitude);
+       longitude=findViewById(R.id.longitude);
     }
 }
