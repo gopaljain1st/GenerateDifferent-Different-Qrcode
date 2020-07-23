@@ -129,13 +129,12 @@ public class GeneratedCodeActivity extends AppCompatActivity
                 });
                 builder.create();
                 builder.show();
-
             }
         });
     }
     public void saveBitmap (Bitmap bitmap, String message, String bitName)
     {
-        String fileLocation;
+        //String fileLocation;
         String[] PERMISSIONS = {
                 "android.permission.READ_EXTERNAL_STORAGE",
                 "android.permission.WRITE_EXTERNAL_STORAGE" };
@@ -144,8 +143,73 @@ public class GeneratedCodeActivity extends AppCompatActivity
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, PERMISSIONS,1);
         }
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        int millisecond = calendar.get(Calendar.MILLISECOND);
 
-        String fileName = ""+System.currentTimeMillis();
+        String fileName = message + "_at_" + String.valueOf(year) + "_" + String.valueOf(month) + "_" + String.valueOf(day) + "_" + String.valueOf(hour) + "_" + String.valueOf(minute) + "_" + String.valueOf(second) + "_"  + String.valueOf(millisecond);
+        time = String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day) + " " + String.valueOf(hour) + ":" + String.valueOf(minute) + ":" + String.valueOf(second) + "." + String.valueOf(millisecond);
+        File file;
+
+        String fileLocation;
+
+        String folderLocation;
+
+        if(Build.BRAND.equals("Xiaomi") ){
+            fileLocation = Environment.getExternalStorageDirectory().getPath()+"/DCIM/Camera/ScanningCode/" + fileName + bitName ;
+            folderLocation = Environment.getExternalStorageDirectory().getPath()+"/DCIM/Camera/ScanningCode/";
+        }else{
+            fileLocation = Environment.getExternalStorageDirectory().getPath()+"/DCIM/ScanningCode/" + fileName + bitName ;
+            folderLocation = Environment.getExternalStorageDirectory().getPath()+"/DCIM/ScanningCode/";
+        }
+
+        Log.d("file_location", fileLocation);
+
+        file = new File(fileLocation);
+
+        File folder = new File(folderLocation);
+        if (!folder.exists())
+        {
+            folder.mkdirs();
+        }
+
+        if (file.exists())
+        {
+            file.delete();
+        }
+
+
+        FileOutputStream out;
+
+        try
+        {
+            out = new FileOutputStream(file);
+            if (bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out))
+            {
+                out.flush();
+                out.close();
+            }
+        }
+        catch (FileNotFoundException fnfe)
+        {
+            fnfe.printStackTrace();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+        this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + fileName)));
+
+        /*
+        *
+        *
+        * String fileName = ""+System.currentTimeMillis();
 
         ContextWrapper cw = new ContextWrapper(getApplicationContext());
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -173,6 +237,10 @@ public class GeneratedCodeActivity extends AppCompatActivity
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
         int millisecond = calendar.get(Calendar.MILLISECOND);
+        *
+        *
+        *
+        * */
        /* String folderLocation;
 
         if(Build.BRAND.equals("Xiaomi") ){
@@ -242,9 +310,7 @@ public class GeneratedCodeActivity extends AppCompatActivity
 
         this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + fileName)));
 */
-        time = String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day) + " " + String.valueOf(hour) + ":" + String.valueOf(minute) + ":" + String.valueOf(second) + "." + String.valueOf(millisecond);
-
-
+        //time = String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day) + " " + String.valueOf(hour) + ":" + String.valueOf(minute) + ":" + String.valueOf(second) + "." + String.valueOf(millisecond);
 
     }
 }
