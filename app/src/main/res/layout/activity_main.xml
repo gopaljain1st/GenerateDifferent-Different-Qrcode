@@ -72,17 +72,17 @@
                     android:inputType="textCapWords"
                     android:hint="Product" />
             </com.google.android.material.textfield.TextInputLayout>
-        <TextView
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Latitude : Please Allow Permission"
-            android:textColor="#000"
-            android:textSize="17sp"
-            android:padding="10dp"
-            android:id="@+id/latitude"
-            />
-            <TextView
+            <EditText
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Latitude : Please Allow Permission"
+                android:textColor="#000"
+                android:textSize="17sp"
+                android:padding="10dp"
+                android:id="@+id/latitude"
+                />
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Longitude : Please Allow Permission"

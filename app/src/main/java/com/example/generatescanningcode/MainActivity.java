@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
     EditText id,nName,generatedId,product;
     Button generate;
     Spinner type;
-    TextView latitude,longitude;
     String message="",typeString="";
+    TextView latitude,longitude;
     Location currentLocation;
     boolean flag=false;
     private static  final int REQUEST_CODE_LOCATION_PERMISSION = 1;
