@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,22 +29,35 @@ import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText id,nName,generatedId,product;
+    EditText id,nName,generatedId,product,towerId,radioUnitId;
     Button generate;
     Spinner type;
     String message="",typeString="";
     TextView latitude,longitude;
     Location currentLocation;
     boolean flag=false;
+    SharedPreferences sp=null;
     private static  final int REQUEST_CODE_LOCATION_PERMISSION = 1;
     FusedLocationProviderClient fusedLocationProviderClient;
+    int sid;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_new_generate);
         initComponent();
+        sp=getSharedPreferences("serialNo",MODE_PRIVATE);
+        if(sp.getInt("id",-1)==-1)
+        {
+            SharedPreferences.Editor editor=sp.edit();
+            editor.putInt("id",0);
+            editor.commit();
+        }
+        sid=sp.getInt("id",0);
+        sid+=1;
+        nName.setText(""+sid);
         typeString="QR Code";
-        generatedId.setText(""+System.currentTimeMillis());
+        //generatedId.setText(""+System.currentTimeMillis());
         fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
         fetchLastLocatin();
         type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -97,12 +111,17 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     message="";
-                    message+="Id :"+id.getText().toString().trim()+"\n";
-                    message+="NName : "+nName.getText().toString().trim()+"\n";
-                    message+="Generated ID : "+generatedId.getText().toString().trim()+"\n";
-                    message+="Product : "+product.getText().toString().trim()+"\n";
-                    message+=latitude.getText().toString()+"\n";
-                    message+=longitude.getText().toString();
+                    message+="Transaction Id :"+id.getText().toString().trim()+"\n";
+                    message+="Serial Number : "+nName.getText().toString().trim()+"\n";
+                    message+="Quantity : "+generatedId.getText().toString().trim()+"\n";
+                    message+="Asset Id : "+product.getText().toString().trim()+"\n";
+                    message+="Tower Id : "+towerId.getText().toString().trim()+"\n";
+                    message+="Radio Unit Id : "+radioUnitId.getText().toString();
+                //    message+=latitude.getText().toString()+"\n";
+                  //  message+=longitude.getText().toString();
+                    SharedPreferences.Editor editor=sp.edit();
+                    editor.putInt("id",sid);
+                    editor.commit();
                     Intent intent=new Intent(MainActivity.this,GeneratedCodeActivity.class);
                     intent.putExtra("message",message);
                     intent.putExtra("type",typeString);
@@ -124,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
                 if(location!=null){
                     flag=true;
                     currentLocation=location;
-                    latitude.setText("Latitude : "+currentLocation.getLatitude());
-                    longitude.setText("Longitude : "+currentLocation.getLongitude());
+                   // latitude.setText("Latitude : "+currentLocation.getLatitude());
+                    //longitude.setText("Longitude : "+currentLocation.getLongitude());
                     }
             }
         });
@@ -147,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
        nName=findViewById(R.id.nName);
        generatedId=findViewById(R.id.generatedId);
        product=findViewById(R.id.product);
+       radioUnitId=findViewById(R.id.radioUnitId);
+       towerId=findViewById(R.id.towerId);
        generate=findViewById(R.id.generate);
        type=findViewById(R.id.type_spinner);
        latitude=findViewById(R.id.latitude);

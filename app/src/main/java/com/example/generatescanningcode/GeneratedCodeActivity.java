@@ -3,6 +3,7 @@ package com.example.generatescanningcode;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -49,10 +50,12 @@ public class GeneratedCodeActivity extends AppCompatActivity
     private String time;
 
     private Bitmap myBitmap;
-
+    SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //sharedPreferences=getSharedPreferences("serialNo",MODE_PRIVATE);
+
         setContentView(R.layout.generated_code_activity);
         success_imageview=findViewById(R.id.code);
         button_generate=findViewById(R.id.saveImage);
